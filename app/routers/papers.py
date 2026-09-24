@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -72,6 +73,19 @@ def get_paper_pages(paper_id: str, db: Session = Depends(get_db)):
     if not paper:
         raise HTTPException(404, "Paper not found")
     return PaperPagesOut(paper_id=paper.id, pages=paper.pages)
+
+
+@router.get("/{paper_id}/file")
+def get_paper_file(paper_id: str, db: Session = Depends(get_db)):
+    """Serve the original PDF bytes — used by the frontend's PDF viewer to
+    embed the paper directly in the browser via an <iframe>/<embed>."""
+    paper = db.get(Paper, paper_id)
+    if not paper:
+        raise HTTPException(404, "Paper not found")
+    file_path = Path(paper.file_path)
+    if not file_path.exists():
+        raise HTTPException(404, "Paper file is missing on disk")
+    return FileResponse(file_path, media_type="application/pdf", filename=paper.original_filename)
 
 
 @router.delete("/{paper_id}", status_code=204)
