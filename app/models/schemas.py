@@ -48,3 +48,21 @@ class SearchResultOut(BaseModel):
 class SearchResponse(BaseModel):
     query: str
     results: list[SearchResultOut]
+
+
+class ChatRequest(BaseModel):
+    question: str
+    paper_id: str | None = None
+    top_k: int | None = None
+
+
+class CitationOut(BaseModel):
+    paper_id: str
+    paper_title: str
+    page_number: int
+    snippet: str
+
+
+class ChatResponse(BaseModel):
+    answer: str
+    citations: list[CitationOut]

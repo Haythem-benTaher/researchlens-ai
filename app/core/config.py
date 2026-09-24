@@ -29,6 +29,12 @@ class Settings(BaseSettings):
     embedding_dim: int = 384  # must match the model above
     faiss_index_path: Path = storage_dir / "vectors.index"
 
+    # Chat / LLM (local via Ollama — no API key needed)
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3.2"
+    ollama_timeout_seconds: int = 120
+    chat_top_k: int = 5
+
     class Config:
         env_file = ".env"
 
